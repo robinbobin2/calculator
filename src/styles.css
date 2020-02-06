@@ -1,1 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+.full .datepicker {
+  width: 100% !important;
+  max-width: 960px !important;
+}
+
+.full .datepicker--cell {
+  height: 60px !important;
+}
+
+.datepicker--day-name {
+  color: #007bff !important;
+}
+
+.datepicker--cell.-current- {
+  color: #007bff !important;
+}
+
+.datepicker--cell.-selected-,
+.datepicker--cell.-selected-.-current- {
+  background: #007bff !important;
+  color: #fff !important;
+}
+
+.datepicker .datepicker--time-row:nth-child(2n) {
+  display: none !important;
+}
+
+.datepicker--time {
+  height: 80px;
+}
+
+.datepicker--cell.-disabled- {
+  background: #dc3545 !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+}
+body .bs-datepicker-container .bs-datepicker-head {
+  background-color: #fff;
+}
+body .bs-datepicker-container .bs-datepicker-head * {
+  color: #000;
+}

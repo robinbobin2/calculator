@@ -1,0 +1,608 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">Жар-Батюшка</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Раскрыть"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <!-- <li class="nav-item active">
+          <a class="nav-link" href="#"
+            >Home <span class="sr-only">(current)</span></a
+          >
+        </li> -->
+        <li class="nav-item" *ngIf="!userArray">
+          <a class="nav-link">Регистрация</a>
+        </li>
+        <li class="nav-item" *ngIf="!userArray">
+          <a class="nav-link">Войти</a>
+        </li>
+      </ul>
+      <div class="form-inline my-2 my-lg-0" *ngIf="userArray.name">
+        <a style="color: #fff;">{{ userArray.name }} {{ userArray.surname }}</a>
+        <a
+          (click)="logout()"
+          style="color: tomato; cursor: pointer; padding-left: 10px;"
+          >Выйти</a
+        >
+      </div>
+    </div>
+  </div>
+</nav>
+<div
+  class="container"
+  style="background: #f9f9f9;padding-top:30px;padding-bottom: 30px;margin-top:15px;border-radius:.5rem"
+>
+  <div class="row">
+    <div class="col-md-4">
+      <h4 style="margin-bottom: 15px;">Выберите комнату</h4>
+      <button
+        class="btn btn-primary btn-block"
+        data-toggle="collapse"
+        href="#collapseExample"
+        role="button"
+        aria-expanded="false"
+        aria-controls="collapseExample"
+      >
+        Выбрать комнату
+      </button>
+      <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+          <ul class="list-group list-group-flush">
+            <li
+              data-toggle="collapse"
+              href="#collapseExample"
+              role="button"
+              aria-expanded="false"
+              aria-controls="collapseExample"
+              class="list-group-item"
+              *ngFor="let room of rooms"
+              (click)="chooseRoom(room)"
+            >
+              {{ room.Name2 }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        *ngIf="chosenRoom"
+        style="width:100%;height:80px;float:left;border-radius:.5rem;background: #eee;padding: 7px 15px;box-sizing: border-box;margin-top:15px;margin-bottom: 15px;"
+      >
+        <h5 style="line-height: 70px;float:left;">{{ chosenRoom.Name2 }}</h5>
+
+        <button
+          class="btn btn-light"
+          type="button"
+          style="width:40px;float:right;margin-top:15px;background: #ddd;border:0;"
+          (click)="removeRoom()"
+        >
+          -
+        </button>
+      </div>
+      <ng-template [ngIf]="chosenRoom">
+        <div style="width:100%;margin-bottom: 15px; margin-top:20px;">
+          <p style="float:left;margin:0;line-height: 38px;">
+            Количество людей:
+          </p>
+
+          <div class="input-group" style="float:right;width:160px;">
+            <div class="input-group-prepend">
+              <button
+                (click)="onDecrease()"
+                class="btn btn-primary"
+                type="button"
+                style="width:40px;"
+              >
+                -
+              </button>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder=""
+              aria-label=""
+              style="text-align: center;"
+              [value]="peopleCount"
+              disabled
+            />
+            <div class="input-group-append">
+              <button
+                (click)="onIncrease()"
+                class="btn btn-primary"
+                type="button"
+                style="width:40px;"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <small
+            style="color: tomato; display: inline-block;"
+            *ngIf="peopleError"
+            >Максимальное количество людей для номера "{{ chosenRoom.Name2 }}" -
+            {{ chosenRoom.ClientMax }}</small
+          >
+        </div>
+
+        <div
+          style="width:100%;height:40px;margin-bottom: 15px; margin-top:20px;"
+        >
+          <p style="float:left;margin:0;line-height: 38px; margin-top:20px;">
+            Использовать дисконтную карту:
+          </p>
+
+          <div class="dropdown show" style="float:right; margin-top:20px;">
+            <a
+              class="btn btn-secondary dropdown-toggle"
+              href="#"
+              role="button"
+              id="coupon"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              >Карта</a
+            >
+
+            <div class="dropdown-menu" aria-labelledby="coupon">
+              <a class="dropdown-item" href="#">Карта 1</a>
+              <a class="dropdown-item" href="#">Карта 2</a>
+              <a class="dropdown-item" href="#">Карта 3</a>
+            </div>
+          </div>
+        </div>
+
+        <h4 *ngIf="res" style="margin-bottom: 15px; margin-top: 20px;">
+          Итого: <span>{{ res }} рублей</span>
+        </h4>
+        <h5 *ngIf="resErr" style="margin-bottom: 15px; margin-top: 20px;">
+          <span>{{ resErr }}</span>
+        </h5>
+
+        <button
+          class="btn btn-primary btn-block"
+          (click)="onCount()"
+          role="button"
+          [disabled]="!dateChanged"
+        >
+          Рассчитать
+        </button>
+        <button
+          class="btn btn-success btn-block"
+          (click)="onBron(template)"
+          [disabled]="!dateChanged"
+          role="button"
+        >
+          Забронировать
+        </button>
+      </ng-template>
+
+      <ng-template #template>
+        <div
+          class="modal-header"
+          *ngIf="loggedIn == false && bron_success == false"
+        >
+          <h4 class="modal-title pull-left" *ngIf="user_id == 0">
+            Регистрация
+          </h4>
+          <h4 class="modal-title pull-left" *ngIf="user_id != 0">
+            Подтверждение номера телефона
+          </h4>
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="modalRef.hide()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-header" *ngIf="bron_success == true">
+          <h4 class="modal-title pull-left">
+            Номер успешно забронирован
+          </h4>
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="modalRef.hide()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div
+          class="modal-header"
+          *ngIf="loggedIn == true && bron_success == false"
+        >
+          <h4 class="modal-title pull-left">Бронируем номер</h4>
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="modalRef.hide()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div
+          class="modal-body"
+          *ngIf="loggedIn == true && bron_success == false"
+        >
+          <p>Бронируем номер...</p>
+        </div>
+        <div class="modal-body" *ngIf="bron_success == true">
+          <p>Номер успешно забронирован!</p>
+        </div>
+        <div
+          class="modal-body"
+          *ngIf="loggedIn == false && bron_success == false"
+        >
+          <p *ngIf="user_id == 0">
+            Чтобы забронировать номер, Вам нужно зарегистрироваться.
+          </p>
+          <p *ngIf="user_id != 0">Теперь введите код из СМС.</p>
+          <form *ngIf="user_id == 0">
+            <div class="form-group">
+              <strong style="color: tomato; display: block" *ngIf="regError"
+                >Введите верные имя и фамилию</strong
+              >
+              <label for="name">Имя</label>
+              <input
+                [(ngModel)]="registration.name"
+                type="text"
+                name="name"
+                id="name"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="surname">Фамилия</label>
+              <input
+                type="text"
+                name="surname"
+                [(ngModel)]="registration.surname"
+                id="surname"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">Номер телефона</label>
+              <input
+                type="text"
+                [(ngModel)]="registration.phone"
+                name="phone"
+                id="phone"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">Придумайте пароль</label>
+              <input
+                type="password"
+                [(ngModel)]="registration.password"
+                name="password"
+                id="password"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <button
+                role="submit"
+                class="btn btn-primary"
+                (click)="onSignup()"
+              >
+                Зарегистрироваться и продолжить
+              </button>
+            </div>
+          </form>
+          <form *ngIf="user_id != 0">
+            <div class="form-group">
+              <label for="code">Введите код из смс</label>
+              <input
+                type="text"
+                [(ngModel)]="code"
+                name="code"
+                id="code"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <button
+                role="submit"
+                class="btn btn-primary"
+                (click)="onVerify()"
+              >
+                Подтвердить
+              </button>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+      <!-- <h4 style="margin-bottom: 15px;margin-top:15px;">
+        Выберите свободное время заезда <span class="current"></span>
+      </h4> -->
+
+      <!-- <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Комната</th>
+            <th scope="col">Количество свободных часов</th>
+            <th scope="col">Свободно с</th>
+            <th scope="col">Добавить к расчету</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Комната 1</td>
+            <td>5 часов</td>
+            <td>00:00</td>
+            <td>
+              <a class="btn btn-primary btn-block" href="#" role="button"
+                >Добавить</a
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>Комната 2</td>
+            <td>6 часов</td>
+            <td>15:00</td>
+            <td>
+              <a class="btn btn-primary btn-block" href="#" role="button"
+                >Добавить</a
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>Комната 3</td>
+            <td>7 часов</td>
+            <td>12:00</td>
+            <td>
+              <a class="btn btn-primary btn-block" href="#" role="button"
+                >Добавить</a
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table> -->
+    </div>
+
+    <div class="col-md-8">
+      <h4 style="margin-bottom: 15px;" *ngIf="chosenRoom">Выберите дату</h4>
+
+      <bs-daterangepicker-inline
+        [bsValue]="bsInlineRangeValue"
+        (bsValueChange)="onClick($event)"
+        *ngIf="chosenRoom"
+        [bsConfig]="bsConfig"
+      ></bs-daterangepicker-inline>
+      <div class="times" *ngIf="showTime">
+        <h4 style="margin-bottom: 15px;margin-top: 15px;">Выберите время</h4>
+
+        <label [ngClass]="time == '01:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="01:00"
+            name="time"
+          />
+          01:00
+        </label>
+        <label [ngClass]="time == '02:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="02:00"
+            name="time"
+          />
+          02:00
+        </label>
+        <label [ngClass]="time == '03:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="03:00"
+            name="time"
+          />
+          03:00
+        </label>
+        <label [ngClass]="time == '04:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="04:00"
+            name="time"
+          />
+          04:00
+        </label>
+        <label [ngClass]="time == '05:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="05:00"
+            name="time"
+          />
+          05:00
+        </label>
+        <label [ngClass]="time == '06:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="06:00"
+            name="time"
+          />
+          06:00
+        </label>
+        <label [ngClass]="time == '07:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="07:00"
+            name="time"
+          />
+          07:00
+        </label>
+        <label [ngClass]="time == '08:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="08:00"
+            name="time"
+          />
+          08:00
+        </label>
+        <label [ngClass]="time == '09:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="09:00"
+            name="time"
+          />
+          09:00
+        </label>
+        <label [ngClass]="time == '10:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="10:00"
+            name="time"
+          />
+          10:00
+        </label>
+        <label [ngClass]="time == '11:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="11:00"
+            name="time"
+          />
+          11:00
+        </label>
+        <label [ngClass]="time == '12:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="12:00"
+            name="time"
+          />
+          12:00
+        </label>
+        <label [ngClass]="time == '13:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="13:00"
+            name="time"
+          />
+          13:00
+        </label>
+        <label [ngClass]="time == '14:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="14:00"
+            name="time"
+          />
+          14:00
+        </label>
+        <label [ngClass]="time == '15:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="15:00"
+            name="time"
+          />
+          15:00
+        </label>
+        <label [ngClass]="time == '16:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="16:00"
+            name="time"
+          />
+          16:00
+        </label>
+        <label [ngClass]="time == '17:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="17:00"
+            name="time"
+          />
+          17:00
+        </label>
+        <label [ngClass]="time == '18:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="18:00"
+            name="time"
+          />
+          18:00
+        </label>
+        <label [ngClass]="time == '19:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="19:00"
+            name="time"
+          />
+          19:00
+        </label>
+        <label [ngClass]="time == '20:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="20:00"
+            name="time"
+          />
+          20:00
+        </label>
+        <label [ngClass]="time == '21:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="21:00"
+            name="time"
+          />
+          21:00
+        </label>
+        <label [ngClass]="time == '22:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="22:00"
+            name="time"
+          />
+          22:00
+        </label>
+        <label [ngClass]="time == '23:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="23:00"
+            name="time"
+          />
+          23:00
+        </label>
+        <label [ngClass]="time == '24:00' ? 'chosen' : ''">
+          <input
+            type="radio"
+            (click)="chooseTime($event)"
+            value="24:00"
+            name="time"
+          />
+          24:00
+        </label>
+      </div>
+    </div>
+  </div>
+</div>

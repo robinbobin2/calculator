@@ -1,0 +1,29 @@
+.form-group {
+  margin-bottom: 20px;
+}
+.times label {
+  border-radius: 3px;
+  padding: 2px 4px;
+  /* border: 1px solid rgb(29, 60, 82); */
+  margin: 6px;
+}
+.nav-link {
+  cursor: pointer;
+}
+.times input {
+  display: none;
+}
+.times label {
+  cursor: pointer;
+}
+label.chosen {
+  font-weight: bold;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 300;
+}
