@@ -42,9 +42,35 @@
   class="container"
   style="background: #f9f9f9;padding-top:30px;padding-bottom: 30px;margin-top:15px;border-radius:.5rem"
 >
+
+	<div class="row"><div class="col-md-12"><h4 style="margin-bottom: 15px;text-align:center;">Добро пожаловать в систему бронирования "Жар Батюшка"! </h4>
+	
+	<h5 style="margin-bottom: 15px;text-align:center;">
+	
+	Здесь вы можете забронировать понравившйся номер! Для этого выберите номер из списка для бронирования. 
+	
+	Если вы впервые на сайте в процессе бронирования вы пройдете регистрацию и создадите личный кабинет для отслеживания всех бронирований.
+	
+	Расчет происходит автоматически после выбора времени заезда.
+	
+	<br>
+	
+	Жарим Вас для Вас!
+	
+	<br>
+	
+	(Немного описания, куда я зашел и что тут происходит. Можно описать дальнейшие шаги и добавить фотографии номеров)
+	
+	</h5>
+	
+	<hr>
+
+
   <div class="row">
+  
+  
     <div class="col-md-4">
-      <h4 style="margin-bottom: 15px;">Выберите комнату</h4>
+      <h4 style="margin-bottom: 15px;text-align:center;">Выберите комнату</h4>
       <button
         class="btn btn-primary btn-block"
         data-toggle="collapse"
@@ -55,7 +81,7 @@
       >
         Выбрать комнату
       </button>
-      <div class="collapse" id="collapseExample">
+      <div class="collapse show" id="collapseExample">
         <div class="card card-body">
           <ul class="list-group list-group-flush">
             <li
@@ -97,7 +123,7 @@
           <div class="input-group" style="float:right;width:160px;">
             <div class="input-group-prepend">
               <button
-                (click)="onDecrease()"
+                (click)="onDecrease();onCount()"
                 class="btn btn-primary"
                 type="button"
                 style="width:40px;"
@@ -116,7 +142,7 @@
             />
             <div class="input-group-append">
               <button
-                (click)="onIncrease()"
+                (click)="onIncrease();onCount()"
                 class="btn btn-primary"
                 type="button"
                 style="width:40px;"
@@ -159,22 +185,41 @@
             </div>
           </div>
         </div>
+		
 
-        <h4 *ngIf="res" style="margin-bottom: 15px; margin-top: 20px;">
+	
+	
+	<ng-container *ngIf="time && res;else second"><h4 style="margin-bottom: 15px; margin-top: 20px;float:left;">Итого: {{ res }} рублей</h4></ng-container>
+	<ng-template #second>
+    <ng-container *ngIf="time;else third"><h4 style="margin-bottom: 15px; margin-top: 20px;float:left;">Рассчитываем стоимость...</h4></ng-container>
+	</ng-template>
+	<ng-template #third><h4 style="margin-bottom: 15px; margin-top: 20px;float:left;">Для расчета выберите дату и время заезда</h4></ng-template>
+	
+	
+
+
+		<!--<h4 *ngIf="time" style="margin-bottom: 15px; margin-top: 20px;">
+			Рассчитываем стоимость...
+        </h4>
+
+        <h4 *ngIf="time && res" style="margin-bottom: 15px; margin-top: 20px;">
           Итого: <span>{{ res }} рублей</span>
         </h4>
+		
         <h5 *ngIf="resErr" style="margin-bottom: 15px; margin-top: 20px;">
           <span>{{ resErr }}</span>
-        </h5>
+        </h5>-->
+		
+		
 
-        <button
+        <!--<button
           class="btn btn-primary btn-block"
           (click)="onCount()"
           role="button"
           [disabled]="!dateChanged"
         >
           Рассчитать
-        </button>
+        </button>-->
         <button
           class="btn btn-success btn-block"
           (click)="onBron(template)"
@@ -246,7 +291,7 @@
           *ngIf="loggedIn == false && bron_success == false"
         >
           <p *ngIf="user_id == 0">
-            Чтобы забронировать номер, Вам нужно зарегистрироваться.
+            Вы впервые у нас или еще не прошли авторизацю в личном кабинете. Чтобы забронировать номер, Вам нужно зарегистрироваться.
           </p>
           <p *ngIf="user_id != 0">Теперь введите код из СМС.</p>
           <form *ngIf="user_id == 0">
@@ -261,6 +306,7 @@
                 name="name"
                 id="name"
                 class="form-control"
+				placeholder="Введите имя"
               />
             </div>
             <div class="form-group">
@@ -271,6 +317,7 @@
                 [(ngModel)]="registration.surname"
                 id="surname"
                 class="form-control"
+				placeholder="Введите фамилию"
               />
             </div>
             <div class="form-group">
@@ -281,6 +328,7 @@
                 name="phone"
                 id="phone"
                 class="form-control"
+				placeholder="Введите контактный номер телефона"
               />
             </div>
             <div class="form-group">
@@ -291,6 +339,7 @@
                 name="password"
                 id="password"
                 class="form-control"
+				placeholder="Введите пароль"
               />
             </div>
             <div class="form-group">
@@ -371,7 +420,7 @@
             </td>
           </tr>
         </tbody>
-      </table> -->
+      </table> [bsConfig]="bsConfig"-->
     </div>
 
     <div class="col-md-8">
@@ -381,15 +430,16 @@
         [bsValue]="bsInlineRangeValue"
         (bsValueChange)="onClick($event)"
         *ngIf="chosenRoom"
-        [bsConfig]="bsConfig"
-      ></bs-daterangepicker-inline>
+		[minDate]="minDate"
+		[bsConfig]="{ showWeekNumbers:false }" 
+		></bs-daterangepicker-inline>
       <div class="times" *ngIf="showTime">
-        <h4 style="margin-bottom: 15px;margin-top: 15px;">Выберите время</h4>
+        <h4 style="margin-bottom: 15px;margin-top: 15px;">Выберите время. Бронирование действует 24 часа от начала выбранного времени</h4>
 
         <label [ngClass]="time == '01:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="01:00"
             name="time"
           />
@@ -398,7 +448,7 @@
         <label [ngClass]="time == '02:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="02:00"
             name="time"
           />
@@ -407,7 +457,7 @@
         <label [ngClass]="time == '03:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="03:00"
             name="time"
           />
@@ -416,7 +466,7 @@
         <label [ngClass]="time == '04:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="04:00"
             name="time"
           />
@@ -425,7 +475,7 @@
         <label [ngClass]="time == '05:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="05:00"
             name="time"
           />
@@ -434,7 +484,7 @@
         <label [ngClass]="time == '06:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="06:00"
             name="time"
           />
@@ -443,7 +493,7 @@
         <label [ngClass]="time == '07:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="07:00"
             name="time"
           />
@@ -452,7 +502,7 @@
         <label [ngClass]="time == '08:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="08:00"
             name="time"
           />
@@ -461,7 +511,7 @@
         <label [ngClass]="time == '09:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="09:00"
             name="time"
           />
@@ -470,7 +520,7 @@
         <label [ngClass]="time == '10:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="10:00"
             name="time"
           />
@@ -479,7 +529,7 @@
         <label [ngClass]="time == '11:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="11:00"
             name="time"
           />
@@ -488,7 +538,7 @@
         <label [ngClass]="time == '12:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="12:00"
             name="time"
           />
@@ -497,7 +547,7 @@
         <label [ngClass]="time == '13:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="13:00"
             name="time"
           />
@@ -506,7 +556,7 @@
         <label [ngClass]="time == '14:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="14:00"
             name="time"
           />
@@ -515,7 +565,7 @@
         <label [ngClass]="time == '15:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="15:00"
             name="time"
           />
@@ -524,7 +574,7 @@
         <label [ngClass]="time == '16:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="16:00"
             name="time"
           />
@@ -533,7 +583,7 @@
         <label [ngClass]="time == '17:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="17:00"
             name="time"
           />
@@ -542,7 +592,7 @@
         <label [ngClass]="time == '18:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="18:00"
             name="time"
           />
@@ -551,7 +601,7 @@
         <label [ngClass]="time == '19:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="19:00"
             name="time"
           />
@@ -560,7 +610,7 @@
         <label [ngClass]="time == '20:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="20:00"
             name="time"
           />
@@ -569,7 +619,7 @@
         <label [ngClass]="time == '21:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="21:00"
             name="time"
           />
@@ -578,7 +628,7 @@
         <label [ngClass]="time == '22:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="22:00"
             name="time"
           />
@@ -587,7 +637,7 @@
         <label [ngClass]="time == '23:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="23:00"
             name="time"
           />
@@ -596,7 +646,7 @@
         <label [ngClass]="time == '24:00' ? 'chosen' : ''">
           <input
             type="radio"
-            (click)="chooseTime($event)"
+            (click)="chooseTime($event);onCount()"
             value="24:00"
             name="time"
           />

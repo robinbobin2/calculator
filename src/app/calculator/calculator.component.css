@@ -27,3 +27,14 @@ h5,
 h6 {
   font-weight: 300;
 }
+
+.list-group-item:hover{cursor:pointer;background:#eee}
+
+
+.times label{border: 1px solid #ddd;
+    background: #eee;}
+	
+	.times label.chosen {font-weight:normal;background-color: #5cb85c;color:#fff;border: 1px solid #28a745;}
+	
+	
+

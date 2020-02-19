@@ -11,9 +11,14 @@ import { User } from "../user.model";
   templateUrl: "./calculator.component.html",
   styleUrls: ["./calculator.component.css"]
 })
+
+
 export class CalculatorComponent implements OnInit {
   bsInlineValue = new Date();
   bsInlineRangeValue: Date[];
+  
+  minDate: Date;
+  
   maxDate = new Date();
   bsRangeValue: any;
   rooms: Room[];
@@ -50,7 +55,8 @@ export class CalculatorComponent implements OnInit {
     password: string;
     username?: string;
   };
-  constructor(private api: ApiService, private modalService: BsModalService) {}
+  constructor(private api: ApiService, private modalService: BsModalService) { this.minDate = new Date(); this.minDate.setDate(this.minDate.getDate());}
+  
 
   ngOnInit() {
     if (localStorage.getItem("token")) {
